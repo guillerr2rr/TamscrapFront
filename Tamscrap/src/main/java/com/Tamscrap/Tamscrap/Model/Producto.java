@@ -1,6 +1,5 @@
 package com.Tamscrap.Tamscrap.Model;
 
-
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -12,16 +11,13 @@ import java.util.Set;
 @Entity
 @Table(name = "productos")
 @NaturalIdCache
-@Cache(
-        usage = CacheConcurrencyStrategy.READ_WRITE
-)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Producto {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "nombre")
     private String nombre;
@@ -29,72 +25,19 @@ public class Producto {
     @Column(name = "precio")
     private double precio;
 
+    @Column(name = "imagen")
+    private String imagen;
 
-    @OneToMany(
-            mappedBy = "producto",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Set<ProductosPedidos> pedidos = new HashSet<ProductosPedidos>();
-
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductosPedidos> pedidos = new HashSet<>();
 
     public Producto() {
-
     }
 
-    public Producto(String n, double p) {
-        nombre = n;
-        pedidos = new HashSet<ProductosPedidos>();
-
-        precio = p;
-
-    }
-
-
-    public String getNombre() {
-        return nombre;
-    }
-
-
-    public void setNombre(String nombre) {
+    public Producto(String nombre, double precio, String imagen) {
         this.nombre = nombre;
-    }
-
-
-    public Set<ProductosPedidos> getPedidos() {
-        return pedidos;
-    }
-
-
-    public void setPedidos(Set<ProductosPedidos> pedidos) {
-        this.pedidos = pedidos;
-    }
-
-
-    public String toString(Integer cantidad) {
-        // Formato de la cadena de salida
-        String resultado = nombre + "--->>\n";
-        resultado += "Cantidad: " + cantidad + "\n";
-        resultado += "Precio: " + precio + " €\n";
-
-        return resultado;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-
-    public void setPrecio(double precio) {
         this.precio = precio;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+        this.imagen = imagen;
     }
 
     @Override
@@ -103,6 +46,48 @@ public class Producto {
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", precio=" + precio +
+                ", imagen='" + imagen + '\'' +
+                ", pedidos=" + pedidos +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public Set<ProductosPedidos> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(Set<ProductosPedidos> pedidos) {
+        this.pedidos = pedidos;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

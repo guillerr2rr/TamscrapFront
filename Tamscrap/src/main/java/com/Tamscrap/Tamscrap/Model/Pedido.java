@@ -4,11 +4,12 @@ package com.Tamscrap.Tamscrap.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
- 
+
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
@@ -17,12 +18,15 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "precio")
     private double precio;
 
-    @ManyToOne  
+    @Column(name = "fecha")
+    private LocalDateTime fechaCreacion;
+
+    @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = true)
     @JsonIgnore
     private Cliente cliente;
@@ -49,10 +53,10 @@ public class Pedido {
     public Pedido(Cliente a) {
         cliente = a;
         productos = new HashSet<ProductosPedidos>();
- 
+
     }
 
-    public void addProduct(Producto b, int cantidad) {
+    public void addProducto(Producto b, int cantidad) {
         ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
         if (productos.contains(b_p)) {
             productos.remove(b_p);
@@ -63,7 +67,7 @@ public class Pedido {
         b.getPedidos().add(b_p);
     }
 
-    public void addProduct2(Producto b, int cantidad) {
+    public void addProducto2(Producto b, int cantidad) {
         ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
         if (productos.contains(b_p)) {
             productos.remove(b_p);
@@ -99,7 +103,7 @@ public class Pedido {
         this.precio = precio;
     }
 
-    @ManyToOne( fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     public Set<ProductosPedidos> getProductos() {
         return productos;
     }
@@ -112,28 +116,50 @@ public class Pedido {
     public String toString() {
         return imprimirProductos();
     }
-
     public String imprimirProductos() {
+        StringBuilder resultado = new StringBuilder("Productos del pedido " + id + "\n");
 
-        String resultado = "Productos del pedido " + id + "\n";
         if (productos.size() == 0) {
-
+            resultado.append("No hay productos en este pedido.");
         } else {
             for (ProductosPedidos b : productos) {
-                resultado = resultado + b.getProducto().toString(b.getCantidad());
-                resultado = resultado + "\n";
+                Producto producto = b.getProducto();
+                int cantidad = b.getCantidad();
+
+                resultado.append(producto.getNombre())
+                        .append(" ---> Cantidad: ")
+                        .append(cantidad)
+                        .append(" | Precio Unitario: ")
+                        .append(producto.getPrecio())
+                        .append(" € | Total: ")
+                        .append(producto.getPrecio() * cantidad)
+                        .append(" €\n");
             }
-            resultado = resultado + "\n\n";
+            resultado.append("\n\n");
         }
-        return resultado;
+
+        return resultado.toString();
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Pedido(LocalDateTime fechaCreacion, Cliente cliente) {
+        this.fechaCreacion = fechaCreacion;
+        this.cliente = cliente;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
     }
 
     public void calcularPrecio() {

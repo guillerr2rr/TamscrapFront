@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clientes")
 public class Cliente implements UserDetails {
 
     @Id
