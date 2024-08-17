@@ -9,7 +9,7 @@ public interface ProductoService {
 
 	public Producto obtenerPorId(Long id);
 
-	public Producto obtenerPorUsername(String username);
+	public Producto obtenerPorNombre(String username);
 
 	public Producto insertarProducto(Producto Producto);
 

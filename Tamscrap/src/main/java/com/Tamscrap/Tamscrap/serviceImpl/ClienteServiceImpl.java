@@ -44,9 +44,9 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 
 	@Override
-	public Cliente obtenerPorUsername(String nombre) {
-		return clienteRepository.findByUsername(nombre).orElseThrow();
-
+	public Cliente obtenerPorUsername(String username) {
+//		return clienteRepository.findByUsername(nombre).orElseThrow();
+		return clienteRepository.findByUsername(username).orElse(null);
 	}
 
 }

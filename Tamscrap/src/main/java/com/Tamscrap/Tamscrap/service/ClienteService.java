@@ -8,7 +8,7 @@ public interface ClienteService {
 
     public Cliente obtenerPorId(Long id);
 
-    public Cliente obtenerPorUsername(String nombre);
+    public Cliente obtenerPorUsername(String username);
 
 //	public Cliente InsertarClienteNombre(String nombre);
 

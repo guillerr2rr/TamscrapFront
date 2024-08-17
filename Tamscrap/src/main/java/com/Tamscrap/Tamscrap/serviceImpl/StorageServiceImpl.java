@@ -1,6 +1,7 @@
 package com.Tamscrap.Tamscrap.serviceImpl;
 
 import com.Tamscrap.Tamscrap.exception.StorageException;
+import com.Tamscrap.Tamscrap.service.StorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class StorageService {
+public class StorageServiceImpl implements StorageService {
 
     private final Path rootLocation;
 
-    public StorageService() {
+    public StorageServiceImpl() {
         this.rootLocation = Paths.get("uploads");
     }
 
+    @Override
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         String extension = StringUtils.getFilenameExtension(filename);
@@ -49,10 +51,12 @@ public class StorageService {
 
     }
 
+    @Override
     public Path load(String filename) {
         return rootLocation.resolve(filename);
     }
 
+    @Override
     public Resource loadAsResource(String filename) {
         try {
             Path file = load(filename);

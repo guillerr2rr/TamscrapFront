@@ -3,17 +3,18 @@ package com.Tamscrap.Tamscrap.controller;
 import com.Tamscrap.Tamscrap.Model.Cliente;
 import com.Tamscrap.Tamscrap.Model.Pedido;
 import com.Tamscrap.Tamscrap.Model.Producto;
-import com.Tamscrap.Tamscrap.Model.ProductosPedidos;
 import com.Tamscrap.Tamscrap.repository.ClienteRepo;
 import com.Tamscrap.Tamscrap.repository.PedidoRepo;
 import com.Tamscrap.Tamscrap.repository.ProductoRepo;
+import com.Tamscrap.Tamscrap.serviceImpl.ClienteServiceImpl;
+import com.Tamscrap.Tamscrap.serviceImpl.PedidoServiceImpl;
+import com.Tamscrap.Tamscrap.serviceImpl.ProductoServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,22 +25,48 @@ import java.util.Optional;
 public class CarritoController {
 
     private final PedidoRepo pedidoRepo;
-
     private final ProductoRepo productRepo;
-
     private final ClienteRepo userRepo;
-
     private final HttpSession session;
 
-    public CarritoController(PedidoRepo pedidoRepo, ProductoRepo productRepo, ClienteRepo userRepo, HttpSession session) {
+    private final ProductoServiceImpl productoService;
+
+    private final PedidoServiceImpl pedidoService;
+
+    private final ClienteServiceImpl clienteService;
+
+    public CarritoController(PedidoRepo pedidoRepo, ProductoRepo productRepo, ClienteRepo userRepo, HttpSession session, ProductoServiceImpl productoService, PedidoServiceImpl pedidoService, ClienteServiceImpl clienteService) {
         this.pedidoRepo = pedidoRepo;
         this.productRepo = productRepo;
         this.userRepo = userRepo;
         this.session = session;
+        this.productoService = productoService;
+        this.pedidoService = pedidoService;
+        this.clienteService = clienteService;
+    }
+    @GetMapping(value = { "", "/" })
+    public String mostrarPedidos(Model model) {
+        List<Producto> productos = productoService.obtenerTodos();
+        List<Cliente> clientes = clienteService.obtenerTodos();
+        List<Pedido> lista = pedidoService.obtenerTodos();
+
+        model.addAttribute("listaproductos", productos);
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("pedidos", lista);
+        model.addAttribute("pedidoNuevo", new Pedido());
+        model.addAttribute("pedidoMostrar", new Pedido());
+        model.addAttribute("nombreNuevo", "");
+        model.addAttribute("productos", productos);
+        model.addAttribute("productoNuevo", new Producto());
+        return "pedidos/listarPedidos";
     }
 
+
+
+
+
     @GetMapping("/carrito")
-    public String show(Model model) {
+    public String showCarrito(Model model) {
         List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
                 .orElse(new ArrayList<>());
         model.addAttribute("productos", productRepo.findAllById(productIds));
@@ -47,7 +74,7 @@ public class CarritoController {
     }
 
     @GetMapping("/carrito/add/{id}")
-    public String add(@PathVariable Long id) {
+    public String addProductToCarrito(@PathVariable Long id) {
         List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
                 .orElse(new ArrayList<>());
 
@@ -59,7 +86,7 @@ public class CarritoController {
     }
 
     @GetMapping("/carrito/remove/{id}")
-    public String remove(@PathVariable Long id) {
+    public String removeProductFromCarrito(@PathVariable Long id) {
         List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
                 .orElse(new ArrayList<>());
 
@@ -68,39 +95,73 @@ public class CarritoController {
         return "redirect:/carrito";
     }
 
+//    @PostMapping("/carrito/checkout")
+//    public String checkoutCarrito() {
+//        List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
+//                .orElse(new ArrayList<>());
+//        List<Producto> productos = productRepo.findAllById(productIds);
+//
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Cliente cliente = userRepo.findByUsername(username).orElseThrow();
+//
+//        Pedido pedido = new Pedido(LocalDateTime.now(), cliente);
+//        pedidoRepo.save(pedido);
+//
+//        for (Producto producto : productos) {
+//            pedido.addProducto(producto, 1); // Utiliza el método addProducto del modelo Pedido
+//        }
+//
+//        productRepo.saveAll(productos); // Guarda los productos si ha habido cambios
+//        pedidoRepo.save(pedido); // Guarda el pedido actualizado
+//
+//        session.removeAttribute("carrito_productos");
+//        return "redirect:/pedidos/" + pedido.getId();
+//    }
+
     @GetMapping("/carrito/checkout")
-    public String checkout() {
+    public String crearPedido(Model model) {
+        List<Producto> productos = productoService.obtenerTodos();
+        List<Cliente> clientes = clienteService.obtenerTodos();
+
+        Pedido pedido = new Pedido();
+        model.addAttribute("listaproductos", productos);
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("pedidoNuevo", pedido);
+        return "pedidos/crearPedido";
+    }
+
+    @PostMapping("/carrito/checkout")
+    public String agregarPedido(@ModelAttribute("pedidoNuevo") Pedido pedido, BindingResult bindingResult,
+                                @RequestParam("productos") String[] productoIds) {
+        if (productoIds != null) {
+            for (String productoId : productoIds) {
+                Producto producto = productoService.obtenerPorId(Long.parseLong(productoId));
+                pedido.addProducto(producto, 1);
+            }
+        }
+        pedido.calcularPrecio();
+
+        pedidoService.insertarPedido(pedido);
+
+        return "redirect:/pedidos";
+    }
+
+    @GetMapping("/carrito/crearPedido")
+    public String crearPedidoDesdeCarrito(Model model) {
         List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
                 .orElse(new ArrayList<>());
         List<Producto> productos = productRepo.findAllById(productIds);
+        List<Cliente> clientes = userRepo.findAll();
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Cliente user = userRepo.findByUsername(username).orElseThrow();
-
-        Pedido pedido = new Pedido(LocalDateTime.now(), user);
-
-        pedidoRepo.save(pedido);
-
-
-        for (Producto producto : productos) {
-
-            ProductosPedidos productosPedidos = new ProductosPedidos(producto, pedido, 1);
-
-            pedido.getProductos().add(productosPedidos);
-
-            producto.getPedidos().add(productosPedidos);
-        }
-
-        productRepo.saveAll(productos);
-        pedidoRepo.save(pedido);
-
-        session.removeAttribute("carrito_productos");
-        return "redirect:/pedidos/" + pedido.getId();
+        Pedido pedido = new Pedido();
+        model.addAttribute("listaproductos", productos);
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("pedidoNuevo", pedido);
+        return "pedidos/crearPedido";
     }
 
-
     @ModelAttribute("carrito_total")
-    public Double calculateTotal() {
+    public Double calculateCarritoTotal() {
         List<Long> productIds = Optional.ofNullable((List<Long>) session.getAttribute("carrito_productos"))
                 .orElse(new ArrayList<>());
         List<Producto> productos = productRepo.findAllById(productIds);
