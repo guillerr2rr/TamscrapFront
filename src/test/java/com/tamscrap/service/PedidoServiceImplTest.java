@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 @SpringBootTest
-public class TestPedidos {
+public class PedidoServiceImplTest {
 
     @Autowired
     private PedidoServiceImpl pedidoService;

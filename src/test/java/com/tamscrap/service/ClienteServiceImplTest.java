@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 @SpringBootTest
-public class TestClientes {
+public class ClienteServiceImplTest {
     //Mock
     //no funciona sin autowired??
 

@@ -18,10 +18,10 @@ public class FileController {
         this.storageServiceImpl = storageServiceImpl;
     }
 
-    @GetMapping("/files/{filenombre:.+}")
+    @GetMapping("/files/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filenombre){
-        Resource file = storageServiceImpl.loadAsResource(filenombre);
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename){
+        Resource file = storageServiceImpl.loadAsResource(filename);
         return ResponseEntity.ok().body(file);
     }
 }
