@@ -9,11 +9,11 @@ import java.util.Objects;
 public class ProductoPedidoId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	@Column(name = "pedido_id")
+	
+	@Column(name = "PEDIDO_ID")
 	private Long pedidoId;
 
-	@Column(name = "producto_id")
+	@Column(name = "PRODUCTO_ID")
 	private Long productoId;
 
 	public ProductoPedidoId() {}

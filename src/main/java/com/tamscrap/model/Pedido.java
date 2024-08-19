@@ -11,7 +11,7 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "pedidos")
+@Table(name = "PEDIDOS")
 public class Pedido {
 
 

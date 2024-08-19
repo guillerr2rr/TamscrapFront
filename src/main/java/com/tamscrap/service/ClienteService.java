@@ -6,16 +6,15 @@ import java.util.List;
 
 public interface ClienteService {
 
-    public Cliente obtenerPorId(Long id);
+	Cliente obtenerPorId(Long id);
 
-    public Cliente obtenerPorUsername(String username);
+	Cliente obtenerPorUsername(String username);
 
 //	public Cliente InsertarClienteNombre(String nombre);
 
-    public Cliente insertarCliente(Cliente cliente);
+	Cliente insertarCliente(Cliente cliente);
 
+	void eliminarCliente(Long id);
 
-    public void eliminarCliente(Long id);
-
-    public List<Cliente> obtenerTodos();
+	List<Cliente> obtenerTodos();
 }

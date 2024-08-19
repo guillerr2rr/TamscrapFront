@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.tamscrap.model.Cliente;
 import com.tamscrap.model.Pedido;
@@ -25,7 +25,7 @@ import com.tamscrap.service.impl.ProductoServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
 
-@Controller
+@RestController
 public class CarritoController {
 
     private final PedidoRepo pedidoRepo;

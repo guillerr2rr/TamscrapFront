@@ -1,4 +1,4 @@
-package com.tamscrap;
+package com.tamscrap.service;
 
 import com.tamscrap.model.Producto;
 import com.tamscrap.service.impl.ProductoServiceImpl;

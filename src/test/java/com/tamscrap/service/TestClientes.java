@@ -1,4 +1,4 @@
-package com.tamscrap;
+package com.tamscrap.service;
 
 import com.tamscrap.model.Cliente;
 import com.tamscrap.model.UserAuthority;

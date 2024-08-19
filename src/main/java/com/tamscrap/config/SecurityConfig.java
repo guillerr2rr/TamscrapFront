@@ -11,31 +11,20 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception{
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(requests ->
-                requests.requestMatchers("/css/**").permitAll()
-                        .requestMatchers("/js/**").permitAll()
-                        .requestMatchers("/files/**").permitAll()
-                        .requestMatchers("/webjars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin()
-                .defaultSuccessUrl("/productos", true)
-                .and()
-                .logout()
-                .logoutSuccessUrl("/productos");
+		http.authorizeHttpRequests(requests -> requests.requestMatchers("/css/**").permitAll().requestMatchers("/js/**")
+				.permitAll().requestMatchers("/files/**").permitAll().requestMatchers("/webjars/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/productos/**").permitAll().anyRequest().authenticated()).formLogin()
+				.defaultSuccessUrl("/productos", true).and().logout().logoutSuccessUrl("/productos");
 
-        return http.build();
-    }
-
+		return http.build();
+	}
 
 }
