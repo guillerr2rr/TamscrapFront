@@ -1,7 +1,16 @@
 package com.tamscrap.model;
 
-import jakarta.persistence.*;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PRODUCTOS_PEDIDOS")
@@ -12,6 +21,7 @@ public class ProductosPedidos {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@MapsId("pedidoId")
+	@JsonBackReference
 	private Pedido pedido;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -36,18 +46,21 @@ public class ProductosPedidos {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if (obj == null)
 			return false;
-		ProductosPedidos that = (ProductosPedidos) o;
-		return Objects.equals(producto, that.producto) && Objects.equals(pedido, that.pedido);
+		if (getClass() != obj.getClass())
+			return false;
+		ProductosPedidos other = (ProductosPedidos) obj;
+		return Objects.equals(id, other.id) && Objects.equals(nombre, other.nombre)
+				&& Objects.equals(producto, other.producto);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(pedido, producto);
+		return Objects.hash(id, nombre, producto);
 	}
 
 	@Override

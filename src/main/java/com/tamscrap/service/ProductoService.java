@@ -1,8 +1,8 @@
 package com.tamscrap.service;
 
-import com.tamscrap.model.Producto;
-
 import java.util.List;
+
+import com.tamscrap.model.Producto;
 
 public interface ProductoService {
 

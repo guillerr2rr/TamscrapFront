@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,26 @@ public class Cliente implements UserDetails {
     @Enumerated(EnumType.STRING)
     private List<UserAuthority> authorities;
 
-    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Override
+	public int hashCode() {
+		return Objects.hash(authorities, email, id, password, pedidos, username);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cliente other = (Cliente) obj;
+		return Objects.equals(authorities, other.authorities) && Objects.equals(email, other.email)
+				&& Objects.equals(id, other.id) && Objects.equals(password, other.password)
+				&& Objects.equals(pedidos, other.pedidos) && Objects.equals(username, other.username);
+	}
+
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Pedido> pedidos = new HashSet<>();
 
     public Cliente() {}

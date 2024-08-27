@@ -1,174 +1,194 @@
 package com.tamscrap.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PEDIDOS")
 public class Pedido {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+	@Column(name = "precio")
+	private double precio;
 
-    @Column(name = "precio")
-    private double precio;
+	@Column(name = "fecha")
+	private LocalDateTime fechaCreacion;
 
-    @Column(name = "fecha")
-    private LocalDateTime fechaCreacion;
+	@ManyToOne
+	@JoinColumn(name = "id_cliente", nullable = true)
+	@JsonIgnore
+	private Cliente cliente;
 
-    @ManyToOne
-    @JoinColumn(name = "id_cliente", nullable = true)
-    @JsonIgnore
-    private Cliente cliente;
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 
-    @OneToMany(
-            mappedBy = "pedido",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Set<ProductosPedidos> productos;
+	private Set<ProductosPedidos> productos;
 
-    public Cliente getCliente() {
-        return cliente;
-    }
+	public Cliente getCliente() {
+		return cliente;
+	}
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(cliente, fechaCreacion, id, precio);
+	}
 
-    public Pedido() {
-        productos = new HashSet<ProductosPedidos>();
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pedido other = (Pedido) obj;
+		return Objects.equals(cliente, other.cliente) && Objects.equals(fechaCreacion, other.fechaCreacion)
+				&& Objects.equals(id, other.id)
+				&& Double.doubleToLongBits(precio) == Double.doubleToLongBits(other.precio);
+	}
 
-    public Pedido(Cliente a) {
-        cliente = a;
-        productos = new HashSet<ProductosPedidos>();
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 
-    }
+	public Pedido() {
+		productos = new HashSet<ProductosPedidos>();
+	}
 
-    public void addProducto(Producto b, int cantidad) {
-        ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
-        if (productos.contains(b_p)) {
-            productos.remove(b_p);
-        }
-        if (cantidad != 0) {
-            productos.add(b_p);
-        }
-        b.getPedidos().add(b_p);
-    }
+	public Pedido(Cliente a) {
+		cliente = a;
+		productos = new HashSet<ProductosPedidos>();
 
-    public void addProducto2(Producto b, int cantidad) {
-        ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
-        if (productos.contains(b_p)) {
-            productos.remove(b_p);
-        }
-        if (cantidad != 0) {
-            productos.add(b_p);
-        }
-        // b.getPedidos().add(b_p);
-    }
+	}
 
-    public void removeProducto(Producto b) {
-        for (Iterator<ProductosPedidos> iterator = productos.iterator();
-             iterator.hasNext(); ) {
-            ProductosPedidos b_p = iterator.next();
+	public void addProducto(Producto b, int cantidad) {
+		ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
+		if (productos.contains(b_p)) {
+			productos.remove(b_p);
+		}
+		if (cantidad != 0) {
+			productos.add(b_p);
+		}
+		b.getPedidos().add(b_p);
+	}
 
-            if (b_p.getPedido().equals(this) &&
-                    b_p.getProducto().equals(b)) {
-                iterator.remove();
-                b_p.getProducto().getPedidos().remove(b_p);
-                b_p.setPedido(null);
-                b_p.setProducto(null);
-                b_p.setCantidad(0);
-            }
-        }
-    }
+	public void addProducto2(Producto b, int cantidad) {
+		ProductosPedidos b_p = new ProductosPedidos(b, this, cantidad);
+		if (productos.contains(b_p)) {
+			productos.remove(b_p);
+		}
+		if (cantidad != 0) {
+			productos.add(b_p);
+		}
+		// b.getPedidos().add(b_p);
+	}
 
+	public void removeProducto(Producto b) {
+		for (Iterator<ProductosPedidos> iterator = productos.iterator(); iterator.hasNext();) {
+			ProductosPedidos b_p = iterator.next();
 
-    public double getPrecio() {
-        return precio;
-    }
+			if (b_p.getPedido().equals(this) && b_p.getProducto().equals(b)) {
+				iterator.remove();
+				b_p.getProducto().getPedidos().remove(b_p);
+				b_p.setPedido(null);
+				b_p.setProducto(null);
+				b_p.setCantidad(0);
+			}
+		}
+	}
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
+	public double getPrecio() {
+		return precio;
+	}
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    public Set<ProductosPedidos> getProductos() {
-        return productos;
-    }
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
 
-    public void setProductos(Set<ProductosPedidos> productos) {
-        this.productos = productos;
-    }
+	@ManyToOne(fetch = FetchType.EAGER)
+	public Set<ProductosPedidos> getProductos() {
+		return productos;
+	}
 
-    @Override
-    public String toString() {
-        return imprimirProductos();
-    }
-    public String imprimirProductos() {
-        StringBuilder resultado = new StringBuilder("Productos del pedido " + id + "\n");
+	public void setProductos(Set<ProductosPedidos> productos) {
+		this.productos = productos;
+	}
 
-        if (productos.size() == 0) {
-            resultado.append("No hay productos en este pedido.");
-        } else {
-            for (ProductosPedidos b : productos) {
-                Producto producto = b.getProducto();
-                int cantidad = b.getCantidad();
+	@Override
+	public String toString() {
+		return imprimirProductos();
+	}
 
-                resultado.append(producto.getNombre())
-                        .append(" ---> Cantidad: ")
-                        .append(cantidad)
-                        .append(" | Precio Unitario: ")
-                        .append(producto.getPrecio())
-                        .append(" € | Total: ")
-                        .append(producto.getPrecio() * cantidad)
-                        .append(" €\n");
-            }
-            resultado.append("\n\n");
-        }
+	public String imprimirProductos() {
+		StringBuilder resultado = new StringBuilder("Productos del pedido " + id + "\n");
 
-        return resultado.toString();
-    }
+		if (productos.size() == 0) {
+			resultado.append("No hay productos en este pedido.");
+		} else {
+			for (ProductosPedidos b : productos) {
+				Producto producto = b.getProducto();
+				int cantidad = b.getCantidad();
 
-    public Long getId() {
-        return id;
-    }
+				resultado.append(producto.getNombre()).append(" ---> Cantidad: ").append(cantidad)
+						.append(" | Precio Unitario: ").append(producto.getPrecio()).append(" € | Total: ")
+						.append(producto.getPrecio() * cantidad).append(" €\n");
+			}
+			resultado.append("\n\n");
+		}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+		return resultado.toString();
+	}
 
-    public Pedido(LocalDateTime fechaCreacion, Cliente cliente) {
-        this.fechaCreacion = fechaCreacion;
-        this.cliente = cliente;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
+	public Pedido(LocalDateTime fechaCreacion, Cliente cliente) {
+		this.fechaCreacion = fechaCreacion;
+		this.cliente = cliente;
+	}
 
-    public void calcularPrecio() {
-        double resultado = 0.0;
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
 
-        for (ProductosPedidos b : productos) {
-            resultado += b.getProducto().getPrecio() * b.getCantidad();
-        }
-        precio = resultado;
-    }
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public void calcularPrecio() {
+		double resultado = 0.0;
+
+		for (ProductosPedidos b : productos) {
+			resultado += b.getProducto().getPrecio() * b.getCantidad();
+		}
+		precio = resultado;
+	}
 
 }

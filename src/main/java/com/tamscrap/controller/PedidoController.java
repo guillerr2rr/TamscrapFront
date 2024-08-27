@@ -2,6 +2,8 @@ package com.tamscrap.controller;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +33,7 @@ public class PedidoController {
 	private final PedidoServiceImpl pedidoService;
 
 	private final ClienteServiceImpl clienteService;
+	private static final Logger logger = Logger.getLogger(PedidoController.class.getName());
 
 	public PedidoController(ProductoServiceImpl productoService, PedidoServiceImpl pedidoService,
 			ClienteServiceImpl clienteService) {
@@ -40,9 +43,10 @@ public class PedidoController {
 	}
 
 	@PostMapping("/api/pedidos")
-	public Pedido guardarPedidos(@RequestBody Pedido pedidos) {
-		pedidoService.insertarPedido(pedidos);
-		return pedidos;
+	public Pedido guardarPedido(@RequestBody Pedido pedido) {
+		logger.log(Level.INFO, "Pedido recibido: {0}", pedido);
+		pedidoService.insertarPedido(pedido);
+		return pedido;
 	}
 
 	@GetMapping(value = { "", "/" })
