@@ -88,4 +88,17 @@ public class ProductoController {
 		return "productos/producto";
 	}
 
+	@GetMapping("/scrapbooking")
+	public String listarProductosScrapbooking(Model model) {
+		List<Producto> productoScrapbooking = productoService.ObtenerProductosScrapbooking();
+		model.addAttribute("producto", productoScrapbooking);
+		return "producto/listarProductosScrapbooking";
+	}
+
+	@GetMapping("/lettering")
+	public String listarProductosLettering(Model model) {
+		List<Producto> productosLettering = productoService.ObtenerProductosLettering();
+		model.addAttribute("productos", productosLettering);
+		return "productos/listarProductosLettering";
+	}
 }
