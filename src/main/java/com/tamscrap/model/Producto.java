@@ -1,13 +1,21 @@
 package com.tamscrap.model;
 
-import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalIdCache;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PRODUCTOS")
@@ -36,6 +44,7 @@ public class Producto {
 	private Set<ProductosPedidos> pedidos = new HashSet<>();
 
 	public Producto() {
+		this.pedidos = new HashSet<>();
 	}
 
 	public Producto(String nombre, double precio, String imagen) {
@@ -52,7 +61,7 @@ public class Producto {
 		this.imagen = imagen;
 		this.lettering = lettering;
 		this.scrapbooking = scrapbooking;
-		this.pedidos = pedidos;
+		this.pedidos = new HashSet<>();
 	}
 
 	@Override

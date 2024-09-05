@@ -25,11 +25,10 @@ public class ProductoServiceImpl implements ProductoService {
 	@Override
 	public Producto insertarProducto(Producto producto) {
 
-		validarProducto(producto);
+ 	validarProducto(producto);
 
-		Producto savedProducto = productoRepo.save(producto);
-
-		return savedProducto;
+		return productoRepo.save(producto);
+ 
 	}
 
 	private void validarProducto(Producto producto) {
