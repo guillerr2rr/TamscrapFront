@@ -1,0 +1,60 @@
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa; 
+  }
+  
+  .table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff; 
+  }
+  
+  .table th, .table td {
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #f8f9fa; 
+    color: #343a40; 
+  }
+  
+  .table td {
+    border-bottom: 1px solid #dee2e6; 
+  }
+  
+  .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
+  .original-price {
+    text-decoration: line-through;
+    color: red;
+  }
+  
+  .discounted-price {
+    font-weight: bold;
+  }
+  
+  .price-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .btn-id {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    background-color: #a8dadc;  
+    color: #ffffff;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .btn-id:hover {
+    background-color: #8ec4c0;
+    color: #ffffff;
+  }
+  
